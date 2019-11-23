@@ -13,7 +13,7 @@ var mongoose   = require('mongoose');
 // SCHEMAS
 
 var Customer = require('./models/customer');
-const CONNECTION_STRING = 'mongodb://user-1:i-hate-passwords@yunus-finance-cluster-shard-00-00-hwwsk.gcp.mongodb.net:27017,yunus-finance-cluster-shard-00-01-hwwsk.gcp.mongodb.net:27017,yunus-finance-cluster-shard-00-02-hwwsk.gcp.mongodb.net:27017/test?ssl=true&replicaSet=yunus-finance-cluster-shard-0&authSource=admin&retryWrites=true&w=majority';
+const CONNECTION_STRING = 'mongodb+srv://user-1:i-hate-passwords@yunus-finance-cluster-hwwsk.gcp.mongodb.net/test?retryWrites=true&w=majority';
 
 
 // configure app to use bodyParser()
@@ -21,7 +21,7 @@ const CONNECTION_STRING = 'mongodb://user-1:i-hate-passwords@yunus-finance-clust
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-mongoose.connect(CONNECTION_STRING);
+mongoose.connect(CONNECTION_STRING, {useNewUrlParser: true});
 
 var port = process.env.PORT || 8080;        // set our port
 
@@ -39,28 +39,37 @@ router.get('/', function(req, res) {
 
 router.route('/customers')
 
-    // create a bear (accessed at POST http://localhost:8080/api/customers)
-    .post(function(req, res) {
-
-        var customer = new Customer();      // create a new instance of the Customer model
-        
-        // setting the customer's attributes to those passed in by the request body
-
-        customer.firstName = req.body.firstName;
-        customer.lastName = req.body.lastName;
-        customer.email = req.body.email;
-        customer.dateOfBirth = req.body.dateOfBirth;
-        customer.phoneNumberCountryCode = req.body.phoneNumberCountryCode;
-        customer.phoneNumber = req.body.phoneNumber;
-        customer.countryName = req.body.countryName;
-        customer.nativeLanguage = req.body.nativeLanguage;
-
-        // save the bear and check for errors
-        bear.save(function(err) {
+    .get(function(req, res) {
+        Customer.find((err, customers) => {
             if (err)
                 res.send(err);
+            
+            res.json(customers);
+        })
+    })
 
-            res.json({ message: 'Customer created!' });
+
+    // create a customer (accessed at POST http://localhost:8080/api/customers)
+    .post(function(req, res) {
+
+        var customer = new Customer({
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            email: req.body.email,
+            dateOfBirth: req.body.dateOfBirth,
+            phoneNumberCountryCode: req.body.phoneNumberCountryCode,
+            phoneNumber: req.body.phoneNumber,
+            countryName: req.body.countryName,
+            nativeLanguage: req.body.nativeLanguage
+        });      // create a new instance of the Customer model
+
+        // save the bear and check for errors
+        customer.save(function(err) {
+            if (err) {
+                res.send(err);
+            } else {
+                res.json({success: true, user: customer });
+            }
         });
 
     });
@@ -73,4 +82,4 @@ app.use('/api', router);
 // START THE SERVER
 // =============================================================================
 app.listen(port);
-console.log('Magic happens on port ' + port);
+console.log('Access on port ' + port);
