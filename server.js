@@ -13,7 +13,7 @@ var mongoose   = require('mongoose');
 // SCHEMAS
 
 var Customer = require('./models/customer');
-const CONNECTION_STRING = 'mongodb+srv://user-1:i-hate-passwords@yunus-finance-cluster-hwwsk.gcp.mongodb.net/test?retryWrites=true&w=majority';
+const CONNECTION_STRING = 'mongodb+srv://user-1:i-hate-passwords@yunus-finance-cluster-hwwsk.gcp.mongodb.net/yunus_database?retryWrites=true&w=majority';
 
 
 // configure app to use bodyParser()
@@ -47,7 +47,6 @@ router.route('/customers')
             res.json(customers);
         })
     })
-
 
     // create a customer (accessed at POST http://localhost:8080/api/customers)
     .post(function(req, res) {
