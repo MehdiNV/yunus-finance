@@ -17,6 +17,7 @@ const path = require ('path');
 var Customer = require('./models/customer');
 const CONNECTION_STRING = 'mongodb://user-1:i-hate-passwords@yunus-finance-cluster-shard-00-00-hwwsk.gcp.mongodb.net:27017,yunus-finance-cluster-shard-00-01-hwwsk.gcp.mongodb.net:27017,yunus-finance-cluster-shard-00-02-hwwsk.gcp.mongodb.net:27017/test?ssl=true&replicaSet=yunus-finance-cluster-shard-0&authSource=admin&retryWrites=true&w=majority';
 
+console.log('I just called, to say, I love youuuuu');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
