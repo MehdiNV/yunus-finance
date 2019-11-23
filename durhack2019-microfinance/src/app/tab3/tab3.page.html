@@ -1,9 +1,22 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>
-      Tab Three
+      Profile
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content></ion-content>
+<ion-content>
+
+  <ion-item lines="full">
+
+    <ion-icon slot="start" name="moon"></ion-icon>
+    <ion-label>
+      Toggle Dark Theme
+    </ion-label>
+
+    <ion-toggle id="themeToggle" slot="end" (click)="clickToggle()"></ion-toggle>
+
+  </ion-item>
+
+</ion-content>
