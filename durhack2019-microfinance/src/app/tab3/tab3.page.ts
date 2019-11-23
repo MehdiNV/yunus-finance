@@ -9,4 +9,10 @@ export class Tab3Page {
 
   constructor() {}
 
+  public clickToggle(){
+    document.body.classList.toggle('--ion-color-dark')
+    document.body.classList.toggle('--ion-color-dark');
+    document.body.classList.toggle('dark');
+  }
+
 }
