@@ -10,6 +10,8 @@ var bodyParser = require('body-parser');
 var cors = require('cors');
 var mongoose   = require('mongoose');
 
+const path = require ('path');
+
 // SCHEMAS
 
 var Customer = require('./models/customer');
@@ -32,6 +34,11 @@ app.set('port', process.env.PORT || 5000);
 var router = express.Router();              // get an instance of the express Router
 
 // more routes for our API will happen here
+
+app.get('/tab/tab1', (req,res) => {
+  res.sendfile(path.resolve('index.html'));
+})
+
 
 router.route('/customers')
 
