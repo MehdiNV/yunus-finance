@@ -36,7 +36,7 @@ var router = express.Router();              // get an instance of the express Ro
 
 // more routes for our API will happen here
 
-app.get('/tab/tab1', (req,res) => {
+app.get('/tabs/tab1', (req,res) => {
   console.log('I just called, to say, I love youuuuu');
   res.redirect('https://yunus-finance.herokuapp.com/');
 })
