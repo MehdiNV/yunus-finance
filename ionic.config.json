@@ -1,0 +1,7 @@
+{
+  "name": "durhack2019-microfinance",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}
