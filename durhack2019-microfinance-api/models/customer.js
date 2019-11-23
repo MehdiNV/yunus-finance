@@ -12,4 +12,4 @@ var CustomerSchema   = new Schema({
     nativeLanguage: String
 });
 
-module.exports = mongoose.model('Bear', BearSchema);
+module.exports = mongoose.model('Customer', CustomerSchema);
