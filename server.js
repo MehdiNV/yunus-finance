@@ -91,6 +91,19 @@ router.route('/customers/:cust_id')
         })
     })
 
+    .delete((req, res) => {
+        Customer.deleteOne({_id: req.params.cust_id}, (err, customer) => {
+            if (err)
+                res.send(err);
+            
+            res.json({message: 'successfully deleted customer'});
+        })
+    })
+
+    .put((req, res) => {
+        console.log("something");
+    });
+
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
