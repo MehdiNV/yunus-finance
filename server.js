@@ -203,7 +203,6 @@ router.route('/add')
 router.route('/request_loan/')
     // In the body: loan amount, loan reason, 
     .post((req, res) => {
-        console.log(req.body);
         createCapitalOneAccount(req, res)
             .then((response) => {
                 let account = response.Accounts[0]
@@ -217,7 +216,6 @@ router.route('/request_loan/')
                     loanAmount: req.body.loanAmount,
                     loanPurpose: req.body.loanPurpose
                 }
-                console.log(req.body);
                 addAccount(req, res)
                     .then((add_acc_res) => {
                         res.json(add_acc_res);
