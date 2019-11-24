@@ -19,23 +19,23 @@
 
     <ion-item>
       <ion-label position="floating">Full Name<ion-text color="danger">*</ion-text></ion-label>
-      <ion-input></ion-input>
+      <ion-input [(ngModel)]="name"></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label position="floating">Current Residence</ion-label>
-      <ion-input></ion-input>
+      <ion-input [(ngModel)]="residence"></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label position="floating">Application Summary</ion-label>
-      <ion-input></ion-input>
+      <ion-input [(ngModel)]="summary"></ion-input>
     </ion-item>
 
     <div class="ion-text-center"> <!-- Button that allows users to narrow down search criteria -->
 
-      <ion-button shape="round">
-        <ion-icon slot="end" name="arrow-forward" (onclick)="applyLoan()"></ion-icon>
+      <ion-button shape="round" (click)="applyLoan()">
+        <ion-icon slot="end" name="arrow-forward"></ion-icon>
         Apply
       </ion-button>
 
