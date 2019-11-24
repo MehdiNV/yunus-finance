@@ -9,6 +9,9 @@ export class Tab1Page {
   name:string;
   residence:string;
   summary:string;
+  email:string;
+  phone:string;
+  nativeLanguage:string;
 
   constructor() {}
 
