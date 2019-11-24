@@ -4,6 +4,24 @@
   margin-right: 5%;
 }
 
+#devpost-Icon{
+  display: inline-block;
+  float: right;
+}
+
+#toolbar{
+  display: flex;
+  width: 100%;
+}
+
+#githublogo{
+  margin-left: 0.5%;
+}
+
+#devpostlogo{
+  margin-right: 0.5%;
+}
+
 .finalRow ion-card{
   width: 63%;
   margin-bottom: 15%;
