@@ -9,6 +9,7 @@ var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var mongoose   = require('mongoose');
+var axios      = require('axios');
 
 const path = require ('path');
 
@@ -16,12 +17,11 @@ const path = require ('path');
 
 var Customer = require('./models/customer');
 const CONNECTION_STRING = 'mongodb+srv://user-1:i-hate-passwords@yunus-finance-cluster-hwwsk.gcp.mongodb.net/yunus_database?retryWrites=true&w=majority';
-
-console.log('I just called, to say, I love youuuuu');
+const AUTH_JWT = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJuYmYiOjE1NzQyNDA0MDAsImFwaV9zdWIiOiI0NzAzZjliNmZlNjEwNzIwN2U1OGFjZmQxMWE3NWZiMTQ2MGU3Y2VhOTExYTg5ZDViOTRhN2ViNTNlMmJiZjE0MTU3NDYzOTk5OTAwMCIsInBsYyI6IjVkY2VjNzRhZTk3NzAxMGUwM2FkNjQ5NSIsImV4cCI6MTU3NDYzOTk5OSwiZGV2ZWxvcGVyX2lkIjoiNDcwM2Y5YjZmZTYxMDcyMDdlNThhY2ZkMTFhNzVmYjE0NjBlN2NlYTkxMWE4OWQ1Yjk0YTdlYjUzZTJiYmYxNCJ9.itQ9cQb4AGyeZCaYYEHeF0VLKPjFxcqwA2FMyiwagaEb_AWBzVRzarcb8cAW-jYak-GHlLcQKLDDwTc9RSgAswOlADGQM-c_s0MSe8MwWzurNpsJh6BRjCJegK4aZd84xREOspaJiBTdDDpPpgusVXHUH4lssFxDxjQWjIGpL8-hv60yQKJMAKB6erRjQkgl5emJRH0rA2FXQy2bD7vMnomi7c-RIoNo0RWWfRekmXIEKD1vLDh-eu9sgZ6SnPFwvu7k-qVI74O5lDJ9L-U9LLseeE0l390lWiTGTTIMn0J0SA2kD66xmLS3Du6M_gqJbn3dkoOeM_fhkkudWov2hA';
 
 // FUNCTIONS FOR API
 
-var getCustomers = (req, res) => {
+var getCustomers = async (req, res) => {
     Customer.find((err, customers) => {
         if (err)
             res.send(err);
@@ -30,7 +30,7 @@ var getCustomers = (req, res) => {
     })
 }
 
-var createCustomer = (req, res) => {
+var createCustomer = async (req, res) => {
     var customer = new Customer({
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -52,19 +52,23 @@ var createCustomer = (req, res) => {
     });
 }
 
-var getCustomer = (req, res) => {
-    Customer.findById(req.params.cust_id, (err, customer) => {
-        if (err) {
-            res.send({sucess: false, response: err});
-        } else if (!customer) {
-            res.send({sucess: false, response: 'No customer found'});
-        } else {
-            res.json({sucess: true, response: customer});
+var getCustomer = async (req, res) => {
+    return new Promise( (resolve, reject) => 
+        {
+            Customer.findById(req.params.cust_id, (err, customer) => {
+                if (err) {
+                    return reject({sucess: false, response: err});
+                } else if (!customer) {
+                    return reject({sucess: false, response: 'No customer found'});
+                } else {
+                    return resolve({sucess: true, response: customer});
+                }
+            })
         }
-    })
+    );
 }
 
-var deleteCustomer = (req, res) => {
+var deleteCustomer = async (req, res) => {
     Customer.deleteOne({_id: req.params.cust_id}, (err, customer) => {
         if (err)
             res.send(err);
@@ -73,7 +77,7 @@ var deleteCustomer = (req, res) => {
     })
 }
 
-var updateCustomer = (req, res) => {
+var updateCustomer = async (req, res) => {
     Customer.findById(req.params.cust_id, (err, customer) => {
         if (err) {
             res.send({sucess: false, response: err});
@@ -126,18 +130,62 @@ router.route('/customers')
     .post(createCustomer);
 
 router.route('/customers/:cust_id')
-    .get(getCustomer)
+    .get((req, res) => {
+        getCustomer(req, res)
+            .then((response) => {
+                res.json(response);
+            })
+            .catch((err) => {
+                res.send(err);
+            })
+        })
     .delete(deleteCustomer)
     .put(updateCustomer);
 
 // CAPITAL ONE INTERACTIONS
+var createCaptialOneAccount = async (req, res) => {
+    return new Promise ((resolve, reject) => {
+        axios.post('https://sandbox.capitalone.co.uk/developer-services-platform-pr/api/data/accounts/create',
+            {
+                'quantity': '1'
+            },
+            {
+                headers: {
+                    'Authorization': "Bearer " + AUTH_JWT,
+                    'version' : '1.0'
+                }
+            },
+        )
+            .then((response) => {
+                resolve(response.data);
+            })
+            .catch((err) => {
+                reject(err);
+            })
+    });
+}
+
 
 router.route('/request_loan/:cust_id')
 
     // In the body: loan amount & loan reason
     .post((req, res) => {
-        // STEP 1: Retrieve customer details
-
+        // STEP 1: Get customer details
+        let customer_response = getCustomer(req, res)
+            .then((response) => {
+                console.log(response);
+                create_account = createCaptialOneAccount(req, res)
+                    .then((response) => {
+                        
+                    })
+                    .catch((err) => {
+                        res.send(err);
+                    })
+            })
+            .catch((err) => {
+                res.send(err);
+            });
+        
         // STEP 2: Create account with Captial One
 
         // STEP 3: Store account details 
