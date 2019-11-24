@@ -101,7 +101,29 @@ router.route('/customers/:cust_id')
     })
 
     .put((req, res) => {
-        console.log("something");
+        Customer.findById(req.params.cust_id, (err, customer) => {
+            if (err) {
+                res.send({sucess: false, response: err});
+            } else if (!customer) {
+                res.send({sucess: false, response: 'No customer found'});
+            } else {
+                console.log(req.body);
+                customer.firstName = req.body.firstName;
+                customer.lastName = req.body.lastName;
+                customer.email = req.body.email;
+                customer.dateOfBirth = req.body.dateOfBirth;
+                customer.phoneNumberCountryCode = req.body.phoneNumberCountryCode;
+                customer.phoneNumber = req.body.phoneNumber;
+                customer.countryName = req.body.countryName;
+                customer.nativeLanguage = req.body.nativeLanguage;
+
+                customer.save((err) => {
+                    if (err)
+                        res.send({success: false});
+                })
+                res.json({sucess: true, response: customer});
+            }
+        })
     });
 
 
