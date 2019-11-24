@@ -4,6 +4,29 @@
   margin-right: 5%;
 }
 
+.finalRow ion-card{
+  width: 63%;
+  margin-bottom: 15%;
+  margin-left: 20%;
+  margin-right: 0%;
+}
+
+ion-grid ion-card{
+  height: 100%;
+}
+
+ion-card-title{
+  font-size: 1.1em;
+}
+
+.finalRow{
+  margin: 0 auto;
+  width: 95%;
+  border: 2px solid black;
+  justify-content: center;
+}
+
+
 
 .Members{
   display: inline-block;
