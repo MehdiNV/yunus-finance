@@ -6,6 +6,9 @@
 
 
 .Members{
+  display: inline-block;
+  width: 100%;
+}
 
 .Member1{
   width: 50%;
@@ -53,6 +56,4 @@
   padding: 20px;
   padding-bottom: 4%;
   border: 2px solid grey;
-}
-
 }
