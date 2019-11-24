@@ -16,6 +16,7 @@ const path = require ('path');
 // SCHEMAS
 
 var Customer = require('./models/customer');
+var Account = require('./models/account');
 const CONNECTION_STRING = 'mongodb+srv://user-1:i-hate-passwords@yunus-finance-cluster-hwwsk.gcp.mongodb.net/yunus_database?retryWrites=true&w=majority';
 const AUTH_JWT = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJuYmYiOjE1NzQyNDA0MDAsImFwaV9zdWIiOiI0NzAzZjliNmZlNjEwNzIwN2U1OGFjZmQxMWE3NWZiMTQ2MGU3Y2VhOTExYTg5ZDViOTRhN2ViNTNlMmJiZjE0MTU3NDYzOTk5OTAwMCIsInBsYyI6IjVkY2VjNzRhZTk3NzAxMGUwM2FkNjQ5NSIsImV4cCI6MTU3NDYzOTk5OSwiZGV2ZWxvcGVyX2lkIjoiNDcwM2Y5YjZmZTYxMDcyMDdlNThhY2ZkMTFhNzVmYjE0NjBlN2NlYTkxMWE4OWQ1Yjk0YTdlYjUzZTJiYmYxNCJ9.itQ9cQb4AGyeZCaYYEHeF0VLKPjFxcqwA2FMyiwagaEb_AWBzVRzarcb8cAW-jYak-GHlLcQKLDDwTc9RSgAswOlADGQM-c_s0MSe8MwWzurNpsJh6BRjCJegK4aZd84xREOspaJiBTdDDpPpgusVXHUH4lssFxDxjQWjIGpL8-hv60yQKJMAKB6erRjQkgl5emJRH0rA2FXQy2bD7vMnomi7c-RIoNo0RWWfRekmXIEKD1vLDh-eu9sgZ6SnPFwvu7k-qVI74O5lDJ9L-U9LLseeE0l390lWiTGTTIMn0J0SA2kD66xmLS3Du6M_gqJbn3dkoOeM_fhkkudWov2hA';
 
@@ -143,7 +144,7 @@ router.route('/customers/:cust_id')
     .put(updateCustomer);
 
 // CAPITAL ONE INTERACTIONS
-var createCaptialOneAccount = async (req, res) => {
+var createCapitalOneAccount = async (req, res) => {
     return new Promise ((resolve, reject) => {
         axios.post('https://sandbox.capitalone.co.uk/developer-services-platform-pr/api/data/accounts/create',
             {
@@ -157,10 +158,10 @@ var createCaptialOneAccount = async (req, res) => {
             },
         )
             .then((response) => {
-                resolve(response.data);
+                return resolve(response.data);
             })
             .catch((err) => {
-                reject(err);
+                return reject(err);
             })
     });
 }
@@ -173,37 +174,53 @@ var addAccount = async (req, res) => {
             uci: req.body.uci,
             riskScore: req.body.riskScore,
             currencyCode: req.body.currencyCode,
-            productType: req.body.productType
+            productType: req.body.productType,
+            loanAmount: req.body.loanAmount,
+            loanPurpose: req.body.loanPurpose
         });      // create a new instance of the Customer model
-    
         // save the bear and check for errors
         account.save(function(err) {
             if (err) {
-                res.send(err);
+                reject(err);
             } else {
-                res.json({success: true, account: account });
+                resolve({success: true, account: account });
             }
         });
     })
 }
 
-// Not exactly working
-router.route('/request_loan/:cust_id')
-    // In the body: loan amount & loan reason
+router.route('/add')
     .post((req, res) => {
-        let customer_response = getCustomer(req, res)
-            .then((cust_response) => {
-                console.log(cust_response);
-                let create_account = createCaptialOneAccount(req, res)
-                    .then((acc_response) => {
-                        let add_account = addAccount(req, res)
-                            .then((addacc_response) => {
-                                console.log('addacc', addacc_response);
-                                res.json(addacc_response);
-                            })
-                            .catch((err) => {
-                                res.send(err);
-                            })
+        addAccount(req, res)
+            .then((response) => {
+                res.json(response);
+            })
+            .catch((err) => {
+                res.send(err);
+            })
+        });
+
+router.route('/request_loan/')
+    // In the body: loan amount, loan reason, 
+    .post((req, res) => {
+        console.log(req.body);
+        createCapitalOneAccount(req, res)
+            .then((response) => {
+                let account = response.Accounts[0]
+                req.body = {
+                    customerId: req.body.customerId,
+                    accountId: account.accountId,
+                    uci: account.uci,
+                    riskScore: account.riskScore,
+                    currencyCode: account.currencyCode,
+                    productType: account.productType,
+                    loanAmount: req.body.loanAmount,
+                    loanPurpose: req.body.loanPurpose
+                }
+                console.log(req.body);
+                addAccount(req, res)
+                    .then((add_acc_res) => {
+                        res.json(add_acc_res);
                     })
                     .catch((err) => {
                         res.send(err);
@@ -211,8 +228,8 @@ router.route('/request_loan/:cust_id')
             })
             .catch((err) => {
                 res.send(err);
-            });
-    });
+            })
+        });
 
 
 // REGISTER OUR ROUTES -------------------------------

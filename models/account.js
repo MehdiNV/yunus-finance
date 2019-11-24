@@ -7,7 +7,9 @@ var AccountSchema = new Schema({
     uci: String,
     riskScore: String,
     currencyCode: String,
-    productType: String
+    productType: String,
+    loanAmount: Number,
+    loanPurpose: String
 }, {collection: 'account_info'});
 
 module.exports = mongoose.model('Account', AccountSchema);
