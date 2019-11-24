@@ -54,7 +54,7 @@ var createCustomer = async (req, res) => {
 }
 
 var getCustomer = async (req, res) => {
-    return new Promise( (resolve, reject) => 
+    return new Promise( (resolve, reject) =>
         {
             Customer.findById(req.params.cust_id, (err, customer) => {
                 if (err) {
@@ -73,7 +73,7 @@ var deleteCustomer = async (req, res) => {
     Customer.deleteOne({_id: req.params.cust_id}, (err, customer) => {
         if (err)
             res.send(err);
-        
+
         res.json({message: 'successfully deleted customer'});
     })
 }
@@ -121,6 +121,16 @@ var router = express.Router();              // get an instance of the express Ro
 // more routes for our API will happen here
 
 app.get('/tabs/tab1', (req,res) => {
+  console.log('I just called, to say, I love youuuuu');
+  res.redirect('https://yunus-finance.herokuapp.com/');
+})
+
+app.get('/tabs/tab2', (req,res) => {
+  console.log('I just called, to say, I love youuuuu');
+  res.redirect('https://yunus-finance.herokuapp.com/');
+})
+
+app.get('/tabs/tab3', (req,res) => {
   console.log('I just called, to say, I love youuuuu');
   res.redirect('https://yunus-finance.herokuapp.com/');
 })
@@ -201,7 +211,7 @@ router.route('/add')
         });
 
 router.route('/request_loan/')
-    // In the body: loan amount, loan reason, 
+    // In the body: loan amount, loan reason,
     .post((req, res) => {
         createCapitalOneAccount(req, res)
             .then((response) => {
@@ -240,4 +250,3 @@ app.use('/api', router);
 app.listen(app.get('port'), function () {
   console.log('Express server listening on port ' + app.get('port'));
 });
-
