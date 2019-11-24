@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import axios from 'axios';
 
+
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
@@ -28,7 +29,18 @@ export class Tab1Page {
       nativeLanguage: this.nativeLanguage
     })
       .then((response) => {
-        alert(response);
+        // Setting up account
+
+        axios.post('https://yunus-finance.herokuapp.com/api/request_loan/', { customerId: response.data._id, loanPurpose: this.summary })
+          .then((success) => {
+            // Do some UI stuff to show that the account/loan was successful
+            alert(`You will now receive a text on ${this.phone} to confirm your loan`);
+          })
+          .catch((err) => {
+            // An error has occurred, you can access details with 'err'
+            alert('TT_TT');
+          });
+
       })
       .catch((err) => {
         alert(err);
