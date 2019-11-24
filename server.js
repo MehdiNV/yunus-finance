@@ -67,11 +67,24 @@ router.route('/customers')
             if (err) {
                 res.send(err);
             } else {
-                res.json({success: true, user: customer });
+                res.json({success: true, customer: customer });
             }
         });
 
     });
+
+router.route('/customers/:cust_id')
+    .get((req, res) => {
+        Customer.findById(req.params.cust_id, (err, customer) => {
+            if (err) {
+                res.send({sucess: false, response: err});
+            } else if (!customer) {
+                res.send({sucess: false, response: 'No customer found'});
+            } else {
+                res.json({sucess: true, response: customer});
+            }
+        })
+    })
 
 
 // REGISTER OUR ROUTES -------------------------------
