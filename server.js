@@ -107,7 +107,6 @@ router.route('/customers/:cust_id')
             } else if (!customer) {
                 res.send({sucess: false, response: 'No customer found'});
             } else {
-                console.log(req.body);
                 customer.firstName = req.body.firstName;
                 customer.lastName = req.body.lastName;
                 customer.email = req.body.email;
