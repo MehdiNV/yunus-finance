@@ -15,7 +15,7 @@ const path = require ('path');
 // SCHEMAS
 
 var Customer = require('./models/customer');
-const CONNECTION_STRING = 'mongodb+srv://user-1:i-hate-passwords@yunus-finance-cluster-hwwsk.gcp.mongodb.net/test?retryWrites=true&w=majority';
+const CONNECTION_STRING = 'mongodb+srv://user-1:i-hate-passwords@yunus-finance-cluster-hwwsk.gcp.mongodb.net/yunus_database?retryWrites=true&w=majority';
 
 console.log('I just called, to say, I love youuuuu');
 
@@ -53,10 +53,6 @@ router.route('/customers')
         })
     })
 
-
-    //var customer = new Customer();      // create a new instance of the Customer model
-
-
     // create a customer (accessed at POST http://localhost:8080/api/customers)
     .post(function(req, res) {
 
@@ -76,10 +72,57 @@ router.route('/customers')
             if (err) {
                 res.send(err);
             } else {
-                res.json({success: true, user: customer });
+                res.json({success: true, customer: customer });
             }
         });
 
+    });
+
+router.route('/customers/:cust_id')
+    .get((req, res) => {
+        Customer.findById(req.params.cust_id, (err, customer) => {
+            if (err) {
+                res.send({sucess: false, response: err});
+            } else if (!customer) {
+                res.send({sucess: false, response: 'No customer found'});
+            } else {
+                res.json({sucess: true, response: customer});
+            }
+        })
+    })
+
+    .delete((req, res) => {
+        Customer.deleteOne({_id: req.params.cust_id}, (err, customer) => {
+            if (err)
+                res.send(err);
+            
+            res.json({message: 'successfully deleted customer'});
+        })
+    })
+
+    .put((req, res) => {
+        Customer.findById(req.params.cust_id, (err, customer) => {
+            if (err) {
+                res.send({sucess: false, response: err});
+            } else if (!customer) {
+                res.send({sucess: false, response: 'No customer found'});
+            } else {
+                customer.firstName = req.body.firstName;
+                customer.lastName = req.body.lastName;
+                customer.email = req.body.email;
+                customer.dateOfBirth = req.body.dateOfBirth;
+                customer.phoneNumberCountryCode = req.body.phoneNumberCountryCode;
+                customer.phoneNumber = req.body.phoneNumber;
+                customer.countryName = req.body.countryName;
+                customer.nativeLanguage = req.body.nativeLanguage;
+
+                customer.save((err) => {
+                    if (err)
+                        res.send({success: false});
+                })
+                res.json({sucess: true, response: customer});
+            }
+        })
     });
 
 
