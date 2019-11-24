@@ -165,18 +165,45 @@ var createCaptialOneAccount = async (req, res) => {
     });
 }
 
+var addAccount = async (req, res) => {
+    return new Promise ((resolve, reject) => {
+        var account = new Account({
+            customerId: req.body.customerId,
+            accountId: req.body.accountId,
+            uci: req.body.uci,
+            riskScore: req.body.riskScore,
+            currencyCode: req.body.currencyCode,
+            productType: req.body.productType
+        });      // create a new instance of the Customer model
+    
+        // save the bear and check for errors
+        account.save(function(err) {
+            if (err) {
+                res.send(err);
+            } else {
+                res.json({success: true, account: account });
+            }
+        });
+    })
+}
 
+// Not exactly working
 router.route('/request_loan/:cust_id')
-
     // In the body: loan amount & loan reason
     .post((req, res) => {
-        // STEP 1: Get customer details
         let customer_response = getCustomer(req, res)
-            .then((response) => {
-                console.log(response);
-                create_account = createCaptialOneAccount(req, res)
-                    .then((response) => {
-                        
+            .then((cust_response) => {
+                console.log(cust_response);
+                let create_account = createCaptialOneAccount(req, res)
+                    .then((acc_response) => {
+                        let add_account = addAccount(req, res)
+                            .then((addacc_response) => {
+                                console.log('addacc', addacc_response);
+                                res.json(addacc_response);
+                            })
+                            .catch((err) => {
+                                res.send(err);
+                            })
                     })
                     .catch((err) => {
                         res.send(err);
@@ -185,12 +212,6 @@ router.route('/request_loan/:cust_id')
             .catch((err) => {
                 res.send(err);
             });
-        
-        // STEP 2: Create account with Captial One
-
-        // STEP 3: Store account details 
-
-
     });
 
 
